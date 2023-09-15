@@ -38,7 +38,8 @@ public class EncryptionHandler {
      * For example：cipher-AES-dataId.
      */
     private static final String PREFIX = "cipher-";
-    
+
+
     /**
      * Execute encryption.
      *
@@ -59,6 +60,30 @@ public class EncryptionHandler {
         }
         EncryptionPluginService encryptionPluginService = optional.get();
         String secretKey = encryptionPluginService.generateSecretKey();
+        String encryptContent = encryptionPluginService.encrypt(secretKey, content);
+        return Pair.with(encryptionPluginService.encryptSecretKey(secretKey), encryptContent);
+    }
+
+    /**
+     * Execute encryption.
+     *
+     * @param dataId  dataId
+     * @param content Content that needs to be encrypted.
+     * @param secretKey secretKey that needs to be secretKey.
+     * @return Return key and ciphertext.
+     */
+    public static Pair<String, String> encryptHandler(String dataId, String content,String secretKey) {
+        if (!checkCipher(dataId)) {
+            return Pair.with("", content);
+        }
+        Optional<String> algorithmName = parseAlgorithmName(dataId);
+        Optional<EncryptionPluginService> optional = algorithmName
+                .flatMap(EncryptionPluginManager.instance()::findEncryptionService);
+        if (!optional.isPresent()) {
+            LOGGER.warn("[EncryptionHandler] [encryptHandler] No encryption program with the corresponding name found");
+            return Pair.with("", content);
+        }
+        EncryptionPluginService encryptionPluginService = optional.get();
         String encryptContent = encryptionPluginService.encrypt(secretKey, content);
         return Pair.with(encryptionPluginService.encryptSecretKey(secretKey), encryptContent);
     }

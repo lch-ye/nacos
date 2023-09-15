@@ -162,14 +162,15 @@ public class ConfigController {
             @RequestParam(required = false) String encryptedDataKey) throws NacosException {
         
         String encryptedDataKeyFinal = null;
+        Pair<String, String> pair = null;
         if (StringUtils.isNotBlank(encryptedDataKey)) {
             encryptedDataKeyFinal = encryptedDataKey;
+            pair = EncryptionHandler.encryptHandler(dataId, content,encryptedDataKeyFinal);
         } else {
-            Pair<String, String> pair = EncryptionHandler.encryptHandler(dataId, content);
-            content = pair.getSecond();
+            pair = EncryptionHandler.encryptHandler(dataId, content);
             encryptedDataKeyFinal = pair.getFirst();
         }
-        
+        content = pair.getSecond();
         // check tenant
         ParamUtils.checkTenant(tenant);
         ParamUtils.checkParam(dataId, group, "datumId", content);
