@@ -503,6 +503,7 @@ public class ExternalConfigInfoPersistServiceImpl implements ConfigInfoPersistSe
                 }
                 
                 String appNameTmp = oldConfigInfo.getAppName();
+
                 /*
                  If the appName passed by the user is not empty, use the persistent user's appName,
                  otherwise use db; when emptying appName, you need to pass an empty string
@@ -652,9 +653,9 @@ public class ExternalConfigInfoPersistServiceImpl implements ConfigInfoPersistSe
             Timestamp now = new Timestamp(System.currentTimeMillis());
             
             jt.update(configInfoMapper.update(
-                            Arrays.asList("content", "md5", "src_ip", "src_user", "gmt_modified", "app_name", "c_desc", "c_use",
+                            Arrays.asList("content", "md5",  "src_user", "gmt_modified", "app_name", "c_desc", "c_use",
                                     "effect", "type", "c_schema", "encrypted_data_key"),
-                            Arrays.asList("data_id", "group_id", "tenant_id")), configInfo.getContent(), md5Tmp, srcIp, srcUser,
+                            Arrays.asList("data_id", "group_id", "tenant_id")), configInfo.getContent(), md5Tmp, srcUser,
                     now, appNameTmp, desc, use, effect, type, schema, encryptedDataKey, configInfo.getDataId(),
                     configInfo.getGroup(), tenantTmp);
         } catch (CannotGetJdbcConnectionException e) {

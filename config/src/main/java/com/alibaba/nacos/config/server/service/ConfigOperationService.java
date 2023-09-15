@@ -94,7 +94,8 @@ public class ConfigOperationService {
         ConfigOperateResult configOperateResult = null;
         
         String persistEvent = ConfigTraceService.PERSISTENCE_EVENT;
-        
+
+
         if (StringUtils.isBlank(configRequestInfo.getBetaIps())) {
             if (StringUtils.isBlank(configForm.getTag())) {
                 configOperateResult = configInfoPersistService.insertOrUpdate(configRequestInfo.getSrcIp(),

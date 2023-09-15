@@ -199,7 +199,7 @@ public class ConfigController {
         }
         
         ConfigRequestInfo configRequestInfo = new ConfigRequestInfo();
-        configRequestInfo.setSrcIp(RequestUtil.getRemoteIp(request));
+        configRequestInfo.setSrcIp("127.0.0.1");
         configRequestInfo.setRequestIpApp(RequestUtil.getAppName(request));
         configRequestInfo.setBetaIps(request.getHeader("betaIps"));
         

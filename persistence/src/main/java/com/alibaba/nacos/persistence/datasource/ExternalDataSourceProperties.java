@@ -19,6 +19,7 @@ package com.alibaba.nacos.persistence.datasource;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.alibaba.nacos.common.utils.Preconditions;
 import com.alibaba.nacos.common.utils.StringUtils;
+import com.alibaba.nacos.persistence.utils.Sm4Util;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -48,7 +49,10 @@ public class ExternalDataSourceProperties {
     private List<String> user = new ArrayList<>();
     
     private List<String> password = new ArrayList<>();
-    
+
+    private List<String> sm4Key = new ArrayList<>();
+
+
     public void setNum(Integer num) {
         this.num = num;
     }
@@ -64,7 +68,11 @@ public class ExternalDataSourceProperties {
     public void setPassword(List<String> password) {
         this.password = password;
     }
-    
+
+    public void setSm4Key(List<String> sm4Key) {
+        this.sm4Key = sm4Key;
+    }
+
     /**
      * Build serveral HikariDataSource.
      *
@@ -86,8 +94,39 @@ public class ExternalDataSourceProperties {
                 poolProperties.setDriverClassName(JDBC_DRIVER_NAME);
             }
             poolProperties.setJdbcUrl(url.get(index).trim());
-            poolProperties.setUsername(getOrDefault(user, index, user.get(0)).trim());
-            poolProperties.setPassword(getOrDefault(password, index, password.get(0)).trim());
+
+            if(sm4Key.size() == 0){
+                sm4Key.add("91C43180D2844ED1F12B859DR5012151");
+            }
+            String split = "DECRYPT@";
+            String key = getOrDefault(sm4Key, index, sm4Key.get(0)).trim();
+            String reallyUserName = "";
+            String reallyPassword = "";
+            try {
+                String userNameEn = getOrDefault(user, index, user.get(0)).trim();
+                String passwordEn = getOrDefault(password, index, password.get(0)).trim();
+
+                if(userNameEn.startsWith(split)){
+                    userNameEn = userNameEn.replace(split, "");
+                    //解密用户名
+                    reallyUserName = Sm4Util.decryptEcb(key, userNameEn);
+                } else {
+                    reallyUserName = userNameEn;
+                }
+
+                if(passwordEn.startsWith(split)){
+                    passwordEn = passwordEn.replace(split, "");
+                    //解密密码
+                    reallyPassword = Sm4Util.decryptEcb(key, passwordEn);
+                } else {
+                    reallyPassword = passwordEn;
+                }
+            } catch (Exception e){
+
+            }
+            poolProperties.setUsername(reallyUserName);
+            poolProperties.setPassword(reallyPassword);
+
             HikariDataSource ds = poolProperties.getDataSource();
             if (StringUtils.isEmpty(ds.getConnectionTestQuery())) {
                 ds.setConnectionTestQuery(TEST_QUERY);
