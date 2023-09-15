@@ -21,5 +21,6 @@
    </dependency>
    ``` 
    
-3. 源码构建：在nacos目录下执行： mvn -Prelease-nacos clean install -Dmaven.test.skip=true -Dcheckstyle.skip=true -Dpmd.skip=true -Drat.skip=true -U
+3. 源码构建：在nacos目录下执行：
+   `mvn -Prelease-nacos clean install -Dmaven.test.skip=true -Dcheckstyle.skip=true -Dpmd.skip=true -Drat.skip=true -U`
    构建好的Nacos部署包在 distribution 工程下。
